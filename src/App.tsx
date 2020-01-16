@@ -1,25 +1,39 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useRef } from "react";
+import ReactDOM from "react-dom";
+import { useForm } from "react-hook-form";
+import { Form, FormControl, FormLabel } from "react-bootstrap";
+//import "./styles.css";
 
 const App: React.FC = () => {
+  const { register, handleSubmit, watch } = useForm();
+  const password = useRef({});
+  password.current = watch("password", "");
+  const onSubmit = async (data: any) => {
+    alert(JSON.stringify(data));
+  };
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Form onSubmit={(e: any) => e.preventDefault()}>
+      <FormLabel>Password</FormLabel>
+      <FormControl
+        name="password"
+        ref={register({
+          required: "You must specify a password",
+          minLength: {
+            value: 8,
+            message: "Password must have at least 8 characters"
+          }
+        })}
+      />
+      <FormLabel>Repeat password</FormLabel>
+      <FormControl
+        name="password_repeat"
+        ref={register({
+          validate: (value: string) =>
+            value === password.current || "The passwords do not match"
+        })}
+      />
+      <input type="submit" onClick={handleSubmit(onSubmit)} />
+    </Form>
   );
 }
 
